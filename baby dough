@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who Will I Be?</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+      background: #fdf3e7;
+      color: #5c3a21;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 { margin-bottom: 5px; }
+    .subtitle { font-size: 0.9rem; color: #8c6244; margin-bottom: 12px; }
+
+    /* Hunger Timer Bar */
+    .hunger-box {
+      width: 100%;
+      max-width: 260px;
+      margin-bottom: 14px;
+    }
+    .hunger-label {
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .hunger-bar-bg {
+      width: 100%;
+      height: 14px;
+      background: #e6ccb2;
+      border: 2px solid #c99a63;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .hunger-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: #7bc96f;
+      transition: width 0.5s, background 0.5s;
+    }
+
+    .stage {
+      width: 240px;
+      height: 240px;
+      background: #fff9f2;
+      border: 4px solid #d9b38c;
+      border-radius: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 0 #d9b38c;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .character-wrapper {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      animation: bounce 2.2s infinite ease-in-out;
+      transition: transform 0.2s, filter 0.4s;
+    }
+    .dough-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .hat-overlay {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3.4rem;
+      pointer-events: none;
+      filter: drop-shadow(0 3px 2px rgba(0,0,0,0.2));
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) scale(1, 1); }
+      50% { transform: translateY(-8px) scale(0.97, 1.03); }
+    }
+
+    .speech {
+      background: #fff;
+      border: 2px solid #d9b38c;
+      border-radius: 15px;
+      padding: 12px 16px;
+      max-width: 310px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .traits {
+      font-size: 0.85rem;
+      background: #f2e1cf;
+      padding: 8px 14px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+    .section-label {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #8c6244;
+      margin: 8px 0 6px;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      max-width: 320px;
+    }
+    button {
+      background: #ffcf87;
+      border: 3px solid #c99a63;
+      border-radius: 14px;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #5c3a21;
+      cursor: pointer;
+    }
+    button.outfit-btn { background: #ffe4b5; }
+    button:active { transform: scale(0.96); }
+    .restart-btn {
+      display: none;
+      margin-top: 14px;
+      background: #ff9aa2;
+      border-color: #c9636b;
+      color: #fff;
+      width: 100%;
+      max-width: 320px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Who Will I Be?</h1>
+  <div class="subtitle">Feed your Baby Dough before it crumbles!</div>
+
+  <div class="hunger-box">
+    <div class="hunger-label">
+      <span>🍼 Tummy Fullness</span>
+      <span id="timer-text">10:00</span>
+    </div>
+    <div class="hunger-bar-bg">
+      <div class="hunger-bar-fill" id="hunger-fill"></div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="character-wrapper" id="dough">
+      <img src="babydough.png" alt="Baby Dough" class="dough-img" id="dough-img" />
+      <div class="hat-overlay" id="hat"></div>
+    </div>
+  </div>
+
+  <div class="speech" id="speech">"Zzz... *drool*... feed me within 10 mins!"</div>
+
+  <div class="traits" id="traits">
+    Personality: Sleepy Doughling
+  </div>
+
+  <div id="controls">
+    <div class="section-label">👗 Dress Up (Shapes Personality!)</div>
+    <div class="buttons">
+      <button class="outfit-btn" onclick="wearOutfit('jester', '🃏')">🃏 Jester Bells</button>
+      <button class="outfit-btn" onclick="wearOutfit('king', '👑')">👑 Royal Crown</button>
+      <button class="outfit-btn" onclick="wearOutfit('healer', '🌸')">🌸 Flower Halo</button>
+      <button class="outfit-btn" onclick="wearOutfit('none', '')">❌ Take Off</button>
+    </div>
+
+    <div class="section-label">🍼 Care & Talk</div>
+    <div class="buttons">
+      <button onclick="interact('sweet')">🍼 Feed Milk (+Full)</button>
+      <button onclick="interact('chaos')">🎲 Play Prank</button>
+      <button onclick="interact('drama')">🎭 Dramatic Speech</button>
+      <button onclick="interact('poke')">👉 Squish Dough</button>
+    </div>
+  </div>
+
+  <button class="restart-btn" id="restart-btn" onclick="resetGame()">🍪 Bake New Baby Dough</button>
+
+  <script>
+    const MAX_SECONDS = 600; // 10 minutes = 600 seconds
+    let timeLeft = MAX_SECONDS;
+    let isDead = false;
+    let stats = { sweet: 0, chaos: 0, drama: 0 };
+    let currentOutfit = "none";
+
+    // Countdown every 1 second
+    const timerInterval = setInterval(() => {
+      if (isDead) return;
+      timeLeft--;
+
+      // Update timer display (MM:SS)
+      const mins = Math.floor(timeLeft / 60);
+      const secs = timeLeft % 60;
+      document.getElementById("timer-text").innerText =
+        `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+
+      // Update bar width & color
+      const pct = (timeLeft / MAX_SECONDS) * 100;
+      const fill = document.getElementById("hunger-fill");
+      fill.style.width = pct + "%";
+
+      if (pct > 50) fill.style.background = "#7bc96f";
+      else if (pct > 20) fill.style.background = "#f4c430";
+      else fill.style.background = "#e65c5c";
+
+      // Hungry warning at 2 minutes left
+      if (timeLeft === 120) {
+        document.getElementById("speech").innerText = '"WAAAH! Tummy rumbling... feed me soon!"';
+      }
+
+      // Death at 0 seconds
+      if (timeLeft <= 0) {
+        crumbleAway();
+      }
+    }, 1000);
+
+    function crumbleAway() {
+      isDead = true;
+      const dough = document.getElementById("dough");
+      dough.style.animation = "none";
+      dough.style.filter = "grayscale(100%) opacity(0.45)";
+      dough.style.transform = "scale(0.85) rotate(12deg)";
+      document.getElementById("hat").innerText = "💀";
+      document.getElementById("speech").innerText =
+        '"*Crumble...* You forgot to feed me... I dried into cookie crumbs..."';
+      document.getElementById("traits").innerText = "Status: Crumbled Dough 💔";
+      document.getElementById("controls").style.display = "none";
+      document.getElementById("restart-btn").style.display = "block";
+    }
+
+    function resetGame() {
+      timeLeft = MAX_SECONDS;
+      isDead = false;
+      stats = { sweet: 0, chaos: 0, drama: 0 };
+      currentOutfit = "none";
+      const dough = document.getElementById("dough");
+      dough.style.animation = "bounce 2.2s infinite ease-in-out";
+      dough.style.filter = "none";
+      dough.style.transform = "";
+      document.getElementById("hat").innerText = "";
+      document.getElementById("speech").innerText = '"Goo! A fresh batch of Baby Dough!"';
+      document.getElementById("traits").innerText = "Personality: Sleepy Doughling";
+      document.getElementById("controls").style.display = "block";
+      document.getElementById("restart-btn").style.display = "none";
+    }
+
+    function wearOutfit(type, icon) {
+      if (isDead) return;
+      currentOutfit = type;
+      document.getElementById("hat").innerText = icon;
+      const speech = document.getElementById("speech");
+
+      if (type === "jester") {
+        stats.chaos += 2;
+        speech.innerText = '"Jingle jingle! Let’s turn the whole kitchen upside down!"';
+      } else if (type === "king") {
+        stats.drama += 2;
+        speech.innerText = '"Kneel before your sleepy tiny monarch!"';
+      } else if (type === "healer") {
+        stats.sweet += 2;
+        speech.innerText = '"So cozy... I wanna take care of everyone!"';
+      } else {
+        speech.innerText = '"Brrr... my head feels naked now!"';
+      }
+      updatePersonality();
+    }
+
+    function interact(type) {
+      if (isDead) return;
+      const speech = document.getElementById("speech");
+      const dough = document.getElementById("dough");
+
+      dough.style.transform = "scale(1.15, 0.85)";
+      setTimeout(() => { if (!isDead) dough.style.transform = ""; }, 200);
+
+      if (type === "sweet") {
+        stats.sweet++;
+        // Refill 10-minute timer when fed!
+        timeLeft = MAX_SECONDS;
+        speech.innerText = currentOutfit === "jester"
+          ? '"Sweet milk?! Hmph... okay, tummy is full!"'
+          : '"Mmm! Warm milk... tummy all full again!"';
+      } else if (type === "chaos") {
+        stats.chaos++;
+        speech.innerText = '"Hehehe! Did you see their face?!"';
+      } else if (type === "drama") {
+        stats.drama++;
+        speech.innerText = '"BEHOLD! Destiny calls upon this squishy dough!"';
+      } else if (type === "poke") {
+        stats.chaos++;
+        speech.innerText = '"Mmph! Don’t squish the outfit!"';
+      }
+      updatePersonality();
+    }
+
+    function updatePersonality() {
+      const traits = document.getElementById("traits");
+      let highest = Object.keys(stats).reduce((a, b) => stats[a] > stats[b] ? a : b);
+      if (stats[highest] >= 2) {
+        if (highest === "sweet") traits.innerText = "Emerging Destiny: Gentle Healer Cookie ✨";
+        if (highest === "chaos") traits.innerText = "Emerging Destiny: Mischievous Jester Cookie 🃏";
+        if (highest === "drama") traits.innerText = "Emerging Destiny: Dramatic Ruler Cookie 👑";
+      }
+    }
+  </script>
+</body>
+</html>
